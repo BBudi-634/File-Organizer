@@ -2,34 +2,20 @@ import os, shutil # shell utilities = allows us to perform various file-related 
 
 path = r"C:/Users/Lolsiest/Downloads/" # hardcoded. DON'T FORGET TO CHANGE AND MAKE IT NOT HARDCODED!!!!!!!!!!!!!
 
-file_name = os.listdir(path) # shows all files in the path
+CATEGORIES = {
+    "Images": ('.jpg', '.jpeg', '.png', '.gif', 'webp'),
+    "Documents": ('.pdf', '.docx', '.txt'),
+    "Videos": ('.mp4', '.mov'),
+    "Audio": ('.mp3', '.wav'),
+    "Archives": ('.zip', '.tar.gz', '.tar.xz')
+}
 
-folder_names = ['Images', 'Documents', 'Videos', 'Audio', 'Archives', 'Executables']
-
-for loop in range(0,6):
-    if not os.path.exists(path + folder_names[loop]):
-        print(path + folder_names[loop])
-        os.makedirs(path + folder_names[loop])
-
-for file in file_name:
-    if '.pdf' in file and not os.path.exists(path + "Documents/" + file):
-        shutil.move(path + file, path + "Documents/" + file)
-    if '.png' in file and not os.path.exists(path + "Images/" + file):
-        shutil.move(path + file, path + "Images/" + file)
-    if '.jpg' in file and not os.path.exists(path + "Images/" + file):
-        shutil.move(path + file, path + "Images/" + file)
-    if '.jpeg' in file and not os.path.exists(path + "Images/" + file):
-        shutil.move(path + file, path + "Images/" + file)
-
-    if '.docx' in file and not os.path.exists(path + "Documents/" + file):
-        shutil.move(path + file, path + "Documents/" + file)
-    if '.xlsx' in file and not os.path.exists(path + "Documents/" + file):
-        shutil.move(path + file, path + "Documents/" + file)
-
-    if '.zip' in file and not os.path.exists(path + "Archives/" + file):
-        shutil.move(path + file, path + "Archives/" + file)
-
-    if '.exe' in file and not os.path.exists(path + "Executables/" + file):
-        shutil.move(path + file, path + "Executables/" + file)
+for filename in os.listdir(path):
+    for category, extensions in CATEGORIES.items():
+        if filename.endswith(extensions):
+            dest = path + category + "/" + filename
+            if not os.path.exists(dest):
+                shutil.move(path + filename, dest)
+            break
 
 
