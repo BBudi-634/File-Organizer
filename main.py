@@ -8,7 +8,8 @@ CATEGORIES = {
     "Videos": ('.mp4', '.mov'),
     "Audio": ('.mp3', '.wav'),
     "Archives": ('.zip', '.tar.gz', '.tar.xz', '.rar', '.7z'),
-    "Executables": ('.exe', '.bat')
+    "Executables": ('.exe', '.bat'),
+    "Others": ('.psd', '.iso', '.msix')
 }
 
 for filename in os.listdir(path):
