@@ -1,6 +1,6 @@
 import os, shutil # shell utilities = allows us to perform various file-related tasks (copying, moving, ect)
 
-path = r"C:/Users/Lolsiest/Downloads/" # hardcoded. DON'T FORGET TO CHANGE AND MAKE IT NOT HARDCODED!!!!!!!!!!!!!
+path = os.path.join(os.path.expanduser("~"), "Downloads")
 
 CATEGORIES = {
     "Images": ('.jpg', '.jpeg', '.png', '.gif', '.webp'),
