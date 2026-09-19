@@ -6,7 +6,16 @@ from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileMovedE
 
 from concurrent.futures import ThreadPoolExecutor
 
+import logging
+
 path = os.path.join(os.path.expanduser("~"), "Downloads")
+
+logging.basicConfig(
+    filename=os.path.join(os.path.expanduser("~"), "organizer.log"),
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+
 
 CATEGORIES = {
     "Documents": {
@@ -85,7 +94,7 @@ def organize_file(filepath: str) -> None: # move single file to category folder.
             os.rename(filepath, dest)
         except OSError:
             shutil.move(filepath, dest)
-        print(f"Moved {filename} -> {category}/{subcategory}")
+        logging.info(f"Moved {filename} -> {category}/{subcategory}")
 
 def organize_all() -> None: # scans whole downloads folder.
     for category, subcategories in CATEGORIES.items():
@@ -120,7 +129,7 @@ def watch() -> None:
     observer = Observer()
     observer.schedule(handler, path, recursive=False)
     observer.start()
-    print(f"Watching {path} (Ctrl+C to exit)")
+    logging.info(f"Watching {path}")
     try:
         while True:
             time.sleep(1)
