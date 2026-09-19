@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 path = os.path.join(os.path.expanduser("~"), "Downloads")
 
 CATEGORIES = {
-    "Images": ('.jpg', '.jpeg', '.png', '.gif', '.webp'),
+    "Images": ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.tga', '.bmp', '.tiff', '.tif', '.svg', '.heic', '.ico'),
     "Documents": ('.pdf', '.docx', '.txt', '.xlsx'),
     "Videos": ('.mp4', '.mov'),
     "Audio": ('.mp3', '.wav'),
