@@ -4,7 +4,7 @@ import time
 from watchdog.observers import Observer # constant watch over any changes
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileMovedEvent, DirCreatedEvent
 
-path = os.path.join(os.path.expanduser("~"), "Desktop", "watch-test")
+path = os.path.join(os.path.expanduser("~"), "Downloads")
 
 CATEGORIES = {
     "Images": ('.jpg', '.jpeg', '.png', '.gif', '.webp'),
@@ -15,6 +15,30 @@ CATEGORIES = {
     "Executables": ('.exe', '.bat'),
     "Others": ('.psd', '.iso', '.msix')
 }
+
+def wait_until_stable(filepath: str, settle: int = 3, timeout: int = 300) -> bool:
+    last_size = -1
+    stable_since = time.time()
+    start = time.time()
+
+    while time.time() - start < timeout:
+        if not os.path.exists(filepath):
+            return False
+        try:
+            size = os.path.getsize(filepath)
+        except OSError:
+            return False
+
+        if size != last_size:
+            last_size = size
+            stable_since = time.time()
+        elif time.time() - stable_since >= settle:
+            return True
+
+        time.sleep(1)
+
+    return False
+
 def organize_file(filepath: str) -> None: # move single file to category folder.
     for filename in os.listdir(path):
         for category, extensions in CATEGORIES.items():
@@ -34,11 +58,16 @@ def organize_all() -> None: # scans whole downloads folder.
 class DownloadHandler(FileSystemEventHandler):
     def on_created(self, event):
         if isinstance(event, FileCreatedEvent) and not event.is_directory:
-            organize_file(event.src_path)
+            filepath = str(event.src_path)
+            if wait_until_stable(filepath):
+                organize_file(event.src_path)
 
     def on_moved(self, event):
         if isinstance(event, FileMovedEvent) and not event.is_directory:
-            organize_file(event.dest_path)
+            filepath = str(event.dest_path)
+            if wait_until_stable(filepath):
+                organize_file(filepath)
+
 
 def watch() -> None:
     organize_all()
