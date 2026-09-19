@@ -87,14 +87,17 @@ def organize_file(filepath: str) -> None: # move single file to category folder.
     category, subcategory = match
     dest_dir = os.path.join(path, category, subcategory)
     dest = os.path.join(dest_dir, filename)
-    os.makedirs(dest_dir, exist_ok=True)
 
-    if not os.path.exists(dest):
-        try:
-            os.rename(filepath, dest)
-        except OSError:
-            shutil.move(filepath, dest)
-        logging.info(f"Moved {filename} -> {category}/{subcategory}")
+    try:
+        os.makedirs(dest_dir, exist_ok=True)
+        if not os.path.exists(dest):
+            try:
+                os.rename(filepath, dest)
+            except OSError:
+                shutil.move(filepath, dest)
+            logging.info(f"Moved {filename} -> {category}/{subcategory}")
+    except (OSError, shutil.Error) as e:
+        logging.error(f"Failed to move {filename}: {e}")
 
 def organize_all() -> None: # scans whole downloads folder.
     for category, subcategories in CATEGORIES.items():
@@ -112,16 +115,22 @@ def organize_all() -> None: # scans whole downloads folder.
 
 class DownloadHandler(FileSystemEventHandler):
     def on_created(self, event):
-        if isinstance(event, FileCreatedEvent) and not event.is_directory:
-            filepath = str(event.src_path)
-            if wait_until_stable(filepath):
-                organize_file(filepath)
+        try:
+            if isinstance(event, FileCreatedEvent) and not event.is_directory:
+                filepath = str(event.src_path)
+                if wait_until_stable(filepath):
+                    organize_file(filepath)
+        except Exception as e:
+            logging.exception(f"Error in on_created for {event.src_path}: {e}")
 
     def on_moved(self, event):
-        if isinstance(event, FileMovedEvent) and not event.is_directory:
-            filepath = str(event.dest_path)
-            if wait_until_stable(filepath):
-                organize_file(filepath)
+        try:
+            if isinstance(event, FileMovedEvent) and not event.is_directory:
+                filepath = str(event.dest_path)
+                if wait_until_stable(filepath):
+                    organize_file(filepath)
+        except Exception as e:
+            logging.exception(f"Error in on_moved for {event.dest_path}: {e}")
 
 def watch() -> None:
     organize_all()
