@@ -4,7 +4,7 @@ import time
 from watchdog.observers import Observer # constant watch over any changes
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileMovedEvent, DirCreatedEvent
 
-path = os.path.join(os.path.expanduser("~"), "Desktop", "watch-test")
+path = os.path.join(os.path.expanduser("~"), "Downloads")
 
 CATEGORIES = {
     "Images": ('.jpg', '.jpeg', '.png', '.gif', '.webp'),
@@ -16,7 +16,7 @@ CATEGORIES = {
     "Others": ('.psd', '.iso', '.msix')
 }
 
-def wait_until_stable(filepath: str, settle: int = 3, timeout: int = 300) -> bool:
+def wait_until_stable(filepath: str, settle: int = 1, timeout: int = 300) -> bool:
     last_size = -1
     stable_since = time.time()
     start = time.time()
@@ -47,7 +47,10 @@ def organize_file(filepath: str) -> None: # move single file to category folder.
             dest = os.path.join(dest_dir, filename)
             os.makedirs(dest_dir, exist_ok=True)
             if not os.path.exists(dest):
-                shutil.move(filepath, dest)
+                try:
+                    os.rename(filepath,dest)
+                except OSError:
+                    shutil.move(filepath, dest)
                 print(f"Moved {filename} -> {category}")
             break
 
