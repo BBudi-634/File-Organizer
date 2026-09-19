@@ -4,7 +4,7 @@ import time
 from watchdog.observers import Observer # constant watch over any changes
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileMovedEvent, DirCreatedEvent
 
-path = os.path.join(os.path.expanduser("~"), "Downloads")
+path = os.path.join(os.path.expanduser("~"), "Desktop", "watch-test")
 
 CATEGORIES = {
     "Images": ('.jpg', '.jpeg', '.png', '.gif', '.webp'),
@@ -40,14 +40,16 @@ def wait_until_stable(filepath: str, settle: int = 3, timeout: int = 300) -> boo
     return False
 
 def organize_file(filepath: str) -> None: # move single file to category folder.
-    for filename in os.listdir(path):
-        for category, extensions in CATEGORIES.items():
-            if filename.endswith(extensions):
-                dest = os.path.join(path, category, filename)
-                os.makedirs(os.path.join(path, category), exist_ok=True)
-                if not os.path.exists(dest):
-                    shutil.move(os.path.join(path, filename), dest)
-                break
+    filename = os.path.basename(filepath)
+    for category, extensions in CATEGORIES.items():
+        if filename.endswith(extensions):
+            dest_dir = os.path.join(path, category)
+            dest = os.path.join(dest_dir, filename)
+            os.makedirs(dest_dir, exist_ok=True)
+            if not os.path.exists(dest):
+                shutil.move(filepath, dest)
+                print(f"Moved {filename} -> {category}")
+            break
 
 def organize_all() -> None: # scans whole downloads folder.
     for filename in os.listdir(path):
@@ -60,14 +62,13 @@ class DownloadHandler(FileSystemEventHandler):
         if isinstance(event, FileCreatedEvent) and not event.is_directory:
             filepath = str(event.src_path)
             if wait_until_stable(filepath):
-                organize_file(event.src_path)
+                organize_file(filepath)
 
     def on_moved(self, event):
         if isinstance(event, FileMovedEvent) and not event.is_directory:
             filepath = str(event.dest_path)
             if wait_until_stable(filepath):
                 organize_file(filepath)
-
 
 def watch() -> None:
     organize_all()

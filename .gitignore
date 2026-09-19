@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .DS_Store
 .idea/
+
+# Local test utilities
+slow_write.py
+cleanup.py
