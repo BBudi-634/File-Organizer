@@ -10,12 +10,12 @@ path = os.path.join(os.path.expanduser("~"), "Downloads")
 
 CATEGORIES = {
     "Images": ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.tga', '.bmp', '.tiff', '.tif', '.svg', '.heic', '.ico'),
-    "Documents": ('.pdf', '.docx', '.txt', '.xlsx'),
+    "Documents": ('.pdf', '.docx', '.txt', '.xlsx', '.json', '.html'),
     "Videos": ('.mp4', '.mov'),
     "Audio": ('.mp3', '.wav'),
     "Archives": ('.zip', '.tar.gz', '.tar.xz', '.rar', '.7z'),
     "Executables": ('.exe', '.bat'),
-    "Others": ('.psd', '.iso', '.msix')
+    "Others": ('.psd', '.iso', '.msix', '.rosz')
 }
 
 def wait_until_stable(filepath: str, settle: int = 1, timeout: int = 300) -> bool:
