@@ -10,7 +10,7 @@ import logging
 
 path = os.path.join(os.path.expanduser("~"), "Downloads")
 
-logging.basicConfig(
+logging.basicConfig( # log file creation
     filename=os.path.join(os.path.expanduser("~"), "organizer.log"),
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
@@ -78,6 +78,16 @@ def find_destination(filename: str) -> tuple[str, str] | None: # search nested s
                 return category, subcategory
     return None
 
+def unique_destination(dest: str) -> str: # Handle file duplicates
+    if not os.path.exists(dest):
+        return dest
+
+    stem, ext = os.path.splitext(dest)
+    i = 1
+    while os.path.exists(f"{stem}_{i}{ext}"):
+        i += 1
+    return f"{stem}_{i}{ext}"
+
 def organize_file(filepath: str) -> None: # move single file to category folder.
     filename = os.path.basename(filepath)
     match = find_destination(filename)
@@ -86,16 +96,15 @@ def organize_file(filepath: str) -> None: # move single file to category folder.
 
     category, subcategory = match
     dest_dir = os.path.join(path, category, subcategory)
-    dest = os.path.join(dest_dir, filename)
+    dest = unique_destination(os.path.join(dest_dir, filename))
 
     try:
         os.makedirs(dest_dir, exist_ok=True)
-        if not os.path.exists(dest):
-            try:
-                os.rename(filepath, dest)
-            except OSError:
-                shutil.move(filepath, dest)
-            logging.info(f"Moved {filename} -> {category}/{subcategory}")
+        try:
+            os.rename(filepath, dest)
+        except OSError:
+            shutil.move(filepath, dest)
+        logging.info(f"Moved {filename} -> {category}/{subcategory}")
     except (OSError, shutil.Error) as e:
         logging.error(f"Failed to move {filename}: {e}")
 
