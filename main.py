@@ -4,6 +4,8 @@ import time
 from watchdog.observers import Observer # constant watch over any changes
 from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileMovedEvent, DirCreatedEvent
 
+from concurrent.futures import ThreadPoolExecutor
+
 path = os.path.join(os.path.expanduser("~"), "Downloads")
 
 CATEGORIES = {
@@ -55,10 +57,17 @@ def organize_file(filepath: str) -> None: # move single file to category folder.
             break
 
 def organize_all() -> None: # scans whole downloads folder.
-    for filename in os.listdir(path):
-        full = os.path.join(path, filename)
-        if os.path.isfile(full):
-            organize_file(full)
+    for category in CATEGORIES:
+        os.makedirs(os.path.join(path, category), exist_ok=True)
+
+    files = [
+        os.path.join(path, f)
+        for f in os.listdir(path)
+        if os.path.isfile(os.path.join(path, f))
+    ]
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        executor.map(organize_file, files)
+
 
 class DownloadHandler(FileSystemEventHandler):
     def on_created(self, event):
