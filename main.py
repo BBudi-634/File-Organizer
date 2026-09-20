@@ -8,7 +8,12 @@ from concurrent.futures import ThreadPoolExecutor
 
 import logging
 
-path = os.path.join(os.path.expanduser("~"), "Downloads")
+from config import load_config
+
+config = load_config()
+watch_path = str(config["watch"])
+destination_path = str(config["destination"])
+CATEGORIES = config["categories"]
 
 logging.basicConfig( # log file creation
     filename=os.path.join(os.path.expanduser("~"), "organizer.log"),
@@ -16,38 +21,6 @@ logging.basicConfig( # log file creation
     format="%(asctime)s %(levelname)s %(message)s",
 )
 
-
-CATEGORIES = {
-    "Documents": {
-        "Word":       ('.docx', '.doc', '.odt', '.rtf'),
-        "PowerPoint": ('.pptx', '.ppt', '.odp'),
-        "Excel":      ('.xlsx', '.xls', '.ods', '.csv'),
-        "PDF":        ('.pdf',),
-        "Text":       ('.txt', '.md'),
-        "Data":       ('.json', '.xml', '.yaml', '.yml', '.toml'),
-        "Other":      ('.html', '.htm'),
-    },
-    "Images": {
-        "Photos":   ('.jpg', '.jpeg', '.png', '.heic', '.bmp', '.tiff'),
-        "Graphics": ('.svg', '.gif', '.webp', '.tga', '.psd', '.ico'),
-    },
-    "Videos": {
-        "Video": ('.mp4', '.mov', '.avi', '.mkv', '.webm'),
-    },
-    "Audio": {
-        "Audio": ('.mp3', '.wav', '.flac', '.m4a', '.ogg'),
-    },
-    "Archives": {
-        "Archive": ('.zip', '.tar.gz', '.tar.xz', '.rar', '.7z', '.tar'),
-    },
-    "Executables": {
-        "Installer": ('.exe', '.msi', '.dmg', '.pkg', '.deb', '.rpm'),
-        "Script":    ('.bat', '.sh', '.ps1'),
-    },
-    "Others": {
-        "Misc": ('.iso', '.msix', '.rosz'),
-    },
-}
 def wait_until_stable(filepath: str, settle: int = 2, timeout: int = 300) -> bool:
     last_size = -1
     stable_since = time.time()
@@ -95,7 +68,7 @@ def organize_file(filepath: str) -> None: # move single file to category folder.
         return
 
     category, subcategory = match
-    dest_dir = os.path.join(path, category, subcategory)
+    dest_dir = os.path.join(destination_path, category, subcategory)
     dest = unique_destination(os.path.join(dest_dir, filename))
 
     try:
@@ -111,12 +84,12 @@ def organize_file(filepath: str) -> None: # move single file to category folder.
 def organize_all() -> None: # scans whole downloads folder.
     for category, subcategories in CATEGORIES.items():
         for subcategory in subcategories:
-            os.makedirs(os.path.join(path, category, subcategory), exist_ok=True)
+            os.makedirs(os.path.join(destination_path, category, subcategory), exist_ok=True)
 
     files = [
-        os.path.join(path, f)
-        for f in os.listdir(path)
-        if os.path.isfile(os.path.join(path, f))
+        os.path.join(watch_path, f)
+        for f in os.listdir(watch_path)
+        if os.path.isfile(os.path.join(watch_path, f))
     ]
     with ThreadPoolExecutor(max_workers=4) as executor:
         executor.map(organize_file, files)
@@ -145,9 +118,9 @@ def watch() -> None:
     organize_all()
     handler = DownloadHandler()
     observer = Observer()
-    observer.schedule(handler, path, recursive=False)
+    observer.schedule(handler, watch_path, recursive=False)
     observer.start()
-    logging.info(f"Watching {path}")
+    logging.info(f"Watching {watch_path} -> sorting into {destination_path}")
     try:
         while True:
             time.sleep(1)
