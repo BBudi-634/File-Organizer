@@ -31,20 +31,20 @@ def record_move(batch_id: str, src: str, dest: str) -> None:
             (batch_id, str(src), str(dest), time.time()),
         )
 
-def get_last_batch() -> list[tuple[str, str]]:
-    """Return (src, dest) pairs from the most recent batch, oldest first."""
+def get_last_batch() -> tuple[str, list[tuple[str, str]]] | None:
+    """Return (batch_id, [(src, dest), ...]) newest first, or None if empty."""
     with _connect() as conn:
         row = conn.execute(
             "SELECT batch_id FROM moves ORDER BY id DESC LIMIT 1"
         ).fetchone()
         if not row:
-            return []
+            return None
         batch_id = row[0]
         rows = conn.execute(
-            "SELECT src, dest FROM moves WHERE batch_id = ? ORDER BY id ASC",
+            "SELECT src, dest FROM moves WHERE batch_id = ? ORDER BY id DESC",
             (batch_id,),
         ).fetchall()
-    return rows
+    return batch_id, rows
 
 def get_batch_by_id(batch_id: str) -> list[tuple[str, str]]:
     """Return (src, dest) pairs for a specific batch, oldest first."""
@@ -66,3 +66,8 @@ def list_recent_batches(limit: int = 10) -> list[tuple[str, float, int]]:
             LIMIT ?
         """, (limit,)).fetchall()
     return rows
+
+def delete_batch(batch_id: str) -> None:
+    """Remove all moves in a batch from the history."""
+    with _connect() as conn:
+        conn.execute("DELETE FROM moves WHERE batch_id = ?", (batch_id,))

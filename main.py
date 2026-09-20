@@ -10,9 +10,12 @@ import logging
 
 from config import load_config
 
-from history import new_batch_id, record_move, get_last_batch, list_recent_batches
+from history import new_batch_id, record_move, list_recent_batches
+from undo import undo_last_batch
 
-CURRENT_BATCH = None
+import argparse
+
+CURRENT_BATCH = new_batch_id()
 
 config = load_config()
 watch_path = str(config["watch"])
@@ -133,5 +136,37 @@ def watch() -> None:
         observer.stop()
     observer.join()
 
+def show_history() -> None:
+    """Print the most recent batches from history.db."""
+    batches = list_recent_batches(10)
+    if not batches:
+        print("No history yet.")
+        return
+    for batch_id, ts, count in batches:
+        when = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
+        print(f"{batch_id}  {when}  {count} file(s)")
+
+def main():
+    parser = argparse.ArgumentParser(description="Organize files by category.")
+    sub = parser.add_subparsers(dest="command")
+
+    sub.add_parser("watch", help="Watch the folder and organize files as they arrive")
+    sub.add_parser("organize", help="Sweep the folder once and exit")
+    sub.add_parser("undo", help="Reverse the most recent batch of moves")
+    sub.add_parser("history", help="Show recent batches")
+
+    args = parser.parse_args()
+
+    if args.command == "watch" or args.command is None:
+        watch()
+    elif args.command == "organize":
+        organize_all()
+        print("Done.")
+    elif args.command == "undo":
+        undo_last_batch()
+    elif args.command == "history":
+        show_history()
+
+
 if __name__ == "__main__":
-    watch()
+    main()
