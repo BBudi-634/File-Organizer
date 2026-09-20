@@ -1,9 +1,11 @@
 .venv/
-__pycache__/
-*.pyc
-.DS_Store
-.idea/
+config.toml
+organizer.log
 
 # Local test utilities
 slow_write.py
 cleanup.py
+__pycache__/
+*.pyc
+.DS_Store
+.idea/
