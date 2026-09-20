@@ -10,6 +10,10 @@ import logging
 
 from config import load_config
 
+from history import new_batch_id, record_move, get_last_batch, list_recent_batches
+
+CURRENT_BATCH = None
+
 config = load_config()
 watch_path = str(config["watch"])
 destination_path = str(config["destination"])
@@ -78,6 +82,7 @@ def organize_file(filepath: str) -> None: # move single file to category folder.
         except OSError:
             shutil.move(filepath, dest)
         logging.info(f"Moved {filename} -> {category}/{subcategory}")
+        record_move(CURRENT_BATCH, filepath, dest)
     except (OSError, shutil.Error) as e:
         logging.error(f"Failed to move {filename}: {e}")
 
