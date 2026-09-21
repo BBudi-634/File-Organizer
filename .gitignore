@@ -1,11 +1,16 @@
 .venv/
-config.toml
-organizer.log
+__pycache__/
+*.pyc
+.idea/
+.DS_Store
 
 # Local test utilities
 slow_write.py
 cleanup.py
-__pycache__/
-*.pyc
-.DS_Store
-.idea/
+
+# Logs
+*.log
+organizer.log
+
+# Local config overrides (not the shared config.toml)
+config.local.toml
