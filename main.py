@@ -52,6 +52,7 @@ def wait_until_stable(filepath: str, settle: int = 2, timeout: int = 300) -> boo
     return False
 
 def find_destination(filename: str) -> tuple[str, str] | None: # search nested structure and returns which category/subcat
+    filename = filename.lower()
     for category, subcategories in CATEGORIES.items():
         for subcategory, extensions in subcategories.items():
             if filename.endswith(extensions):
