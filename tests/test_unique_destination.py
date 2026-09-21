@@ -36,3 +36,5 @@ def test_handles_multi_part_extension(tmp_path):
     (tmp_path / "archive.tar.gz").write_text("data")
 
     result = unique_destination(str(tmp_path / "archive.tar.gz"))
+
+    assert result == str(tmp_path / "archive.tar_1.gz")
