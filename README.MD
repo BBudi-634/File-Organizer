@@ -90,6 +90,16 @@ copy. `shutil.move` is the fallback for cross-filesystem moves.
 the most recent batch, newest-first, and deletes the batch on
 full success.
 
+## Testing
+
+Tests are run with [pytest](https://pytest.org): pytest
+
+Writing the first tests for `find_destination` surfaced a
+case-sensitivity bug: `REPORT.DOCX` fell through to no
+category because `str.endswith` is case-sensitive. Filenames
+are now lowercased before matching, and the test suite covers
+that case.
+
 ## Known limitations
 - **Stability detection is heuristic.** If the connection is too weak or too unstable, it may mess up the stability detection function and accidentally move a downloading file before it finishes.
 - **One batch per process run.** `undo` reverses everything since the watcher was last started. Fine-grained undo (per hour, per folder) would need a different batch model.
