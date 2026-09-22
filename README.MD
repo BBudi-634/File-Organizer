@@ -18,7 +18,7 @@ and being able to undo everything.
 - **Duplicate handling** — second `report.docx` becomes `report_1.docx`,
   nothing is overwritten
 - **Undo** — `python main.py undo` reverses the most recent batch
-- **Configurable** — categories and paths live in `config.toml`
+- **Configurable** — categories and paths live in `src/file_organizer/config.toml`
 - **Logged** — every move recorded to `~/organizer.log`
 - **Threaded sweep** — bulk organizing uses a small thread pool
 
@@ -51,7 +51,7 @@ python main.py
 
 ## Configuration
 
-Edit `config.toml` to change the watched folder, the destination,
+Edit `src/file_organizer/config.toml` to change the watched folder, the destination,
 and the category structure:
 
 ```toml
