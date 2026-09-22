@@ -1,0 +1,65 @@
+[paths]
+# ============================================================
+#  Watch Location
+# ============================================================
+# The folder that will be sorted.
+#
+# Leave empty ("") to auto-detect your Downloads folder.
+# Or set a custom path to sort a different folder.
+# You can use "~" for your home directory.
+#
+# Examples:
+#   watch = ""                          # auto-detect Downloads
+#   watch = "~/Desktop"
+#   watch = "/Users/you/Documents/mess"
+#   watch = "C:/Users/you/Downloads"
+# ============================================================
+watch = ""
+
+# ============================================================
+#  Destination Location
+# ============================================================
+# Where sorted files are moved to.
+#
+# Leave empty ("") to sort in place (same folder as watch).
+# Or set a custom path to move files elsewhere.
+#
+# Examples:
+#   destination = ""                    # sort in place
+#   destination = "~/Sorted"
+#   destination = "D:/Sorted"
+# ============================================================
+destination = ""
+
+# ============================================================
+#  CATEGORIES
+# ============================================================
+
+[categories.Documents]
+Word       = [".docx", ".doc", ".odt", ".rtf"]
+PowerPoint = [".pptx", ".ppt", ".odp"]
+Excel      = [".xlsx", ".xls", ".ods", ".csv"]
+PDF        = [".pdf"]
+Text       = [".txt", ".md"]
+Data       = [".json", ".xml", ".yaml", ".yml", ".toml"]
+Other      = [".html", ".htm"]
+
+[categories.Images]
+Photos   = [".jpg", ".jpeg", ".png", ".heic", ".bmp", ".tiff"]
+Graphics = [".svg", ".gif", ".webp", ".tga", ".psd", ".ico"]
+
+[categories.Videos]
+Video = [".mp4", ".mov", ".avi", ".mkv", ".webm"]
+
+[categories.Audio]
+Audio = [".mp3", ".wav", ".flac", ".m4a", ".ogg"]
+
+[categories.Archives]
+Archive = [".zip", ".tar.gz", ".tar.xz", ".rar", ".7z", ".tar"]
+
+[categories.Executables]
+Installer = [".exe", ".msi", ".dmg", ".pkg", ".deb", ".rpm"]
+Script    = [".bat", ".sh", ".ps1"]
+
+[categories.Others]
+Misc = [".iso", ".msix", ".rosz"]
