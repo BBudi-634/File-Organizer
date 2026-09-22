@@ -59,20 +59,31 @@ python main.py
 
 ## Configuration
 
-Edit `src/file_organizer/config.toml` to change the watched folder, the destination,
-and the category structure:
+## Configuration
+
+On first run, a default config is created at:
+
+```
+~/.file_organizer/config.toml
+```
+
+That's `C:\Users\<you>\.file_organizer\config.toml` on Windows.
+Edit it to change the watched folder, destination, and categories.
+
+If you prefer a project-local config, place a `config.toml` in
+the directory you run the tool from — it takes priority over the
+home config.
+
+Example config:
 
 ```toml
 [paths]
-watch = ""            # empty = ~/Downloads
-destination = ""      # empty = same as watch
+watch = ""           # empty = ~/Downloads
+destination = ""     # empty = sort in place
 
 [categories.Documents]
 Word = [".docx", ".doc"]
 PDF  = [".pdf"]
-
-[categories.Images]
-Photos = [".jpg", ".png"]
 ```
 
 Any file whose extension isn't in any category is left alone and

@@ -3,38 +3,51 @@ import shutil
 import tomllib
 from pathlib import Path
 
-DEFAULT_CONFIG_PATH = Path(__file__).parent / "config.toml"
 EXAMPLE_CONFIG_PATH = Path(__file__).parent / "config.example.toml"
 
-def ensure_config(config_path: Path = DEFAULT_CONFIG_PATH) -> None:
-    """Create config.toml from config.example.toml on first run."""
-    if config_path.is_file():
-        return
+# User config locations, in priority order.
+# First match wins.
+USER_CONFIG_LOCATIONS = [
+    Path.cwd() / "config.toml",                    # project-local override
+    Path.home() / ".file_organizer" / "config.toml" # home fallback
+]
+
+
+def ensure_config() -> Path:
+    """Return the path to the user's config, creating it from the example if needed."""
+    # If a user config exists in any known location, use it
+    for path in USER_CONFIG_LOCATIONS:
+        if path.is_file():
+            return path
+
+    # No user config exists — create one in the home directory
+    target = USER_CONFIG_LOCATIONS[-1]
+    target.parent.mkdir(parents=True, exist_ok=True)
+
     if not EXAMPLE_CONFIG_PATH.is_file():
         raise SystemExit(
-            f"Error: no config found and example missing.\n"
-            f"Expected '{config_path}' or '{EXAMPLE_CONFIG_PATH}'."
+            f"Error: example config missing at '{EXAMPLE_CONFIG_PATH}'.\n"
+            "The package appears to be corrupted. Try reinstalling."
         )
-    shutil.copy(EXAMPLE_CONFIG_PATH, config_path)
-    print(f"Created default config at {config_path}")
-    print("Edit it to change the watch folder or categories.")
 
-def _resolve(raw: str, *, default: Path | None = None) -> Path: # config string to resolved absolute path
+    shutil.copy(EXAMPLE_CONFIG_PATH, target)
+    print(f"Created default config at {target}")
+    print("Edit it to change the watch folder or categories.")
+    return target
+
+
+def _resolve(raw: str, *, default: Path | None = None) -> Path:
     if not raw or not raw.strip():
         if default is None:
             raise SystemExit("Error: missing required path in config.toml.")
         path = default
     else:
-        # Expand ~ and $VARS, then make absolute
         path = Path(os.path.expandvars(os.path.expanduser(raw.strip())))
-
     return path.resolve()
 
 
-def load_config(config_path: Path = DEFAULT_CONFIG_PATH) -> dict:
-    ensure_config()
-    if not config_path.is_file():
-        raise SystemExit(f"Error: config file not found at '{config_path}'.")
+def load_config() -> dict:
+    config_path = ensure_config()
 
     with config_path.open("rb") as f:
         raw = tomllib.load(f)
@@ -45,15 +58,15 @@ def load_config(config_path: Path = DEFAULT_CONFIG_PATH) -> dict:
     if not watch.is_dir():
         raise SystemExit(
             f"Error: watch folder '{watch}' does not exist.\n"
-            f"Edit 'watch' in the [paths] section of config.toml."
+            f"Edit 'watch' in the [paths] section of {config_path}."
         )
 
     destination = _resolve(paths.get("destination", ""), default=watch)
 
-    categories_raw = raw.get("categories") # error check if categories is missing from toml
+    categories_raw = raw.get("categories")
     if not categories_raw:
         raise SystemExit(
-            "Error: no [categories] defined in config.toml.\n"
+            f"Error: no [categories] defined in {config_path}.\n"
             "Add at least one [categories.<Name>] section."
         )
 

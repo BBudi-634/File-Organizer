@@ -13,8 +13,8 @@ dependencies = ["watchdog>=4.0.0"]
 [project.scripts]
 file-organizer = "file_organizer.cli:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.setuptools.package-data]
+file_organizer = ["config.example.toml"]
 
 [tool.setuptools.package-data]
 file_organizer = ["config.toml"]
