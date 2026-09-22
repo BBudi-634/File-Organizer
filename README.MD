@@ -28,20 +28,28 @@ and being able to undo everything.
 - `watchdog`
 
 ## Install
+
 ```bash
-git clone https://github.com/bryantsetyobudi634-wq/file-organizer.git
+git clone https://github.com/yourusername/file-organizer.git
 cd file-organizer
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -e .
 ```
 
 ## Usage
+
 ```bash
-python main.py watch       # start watching the folder (default)
-python main.py organize    # sweep once and exit
-python main.py undo        # reverse the most recent batch
-python main.py history     # show recent batches
+file-organizer watch       # start watching the folder (default)
+file-organizer organize    # sweep once and exit
+file-organizer undo        # reverse the most recent batch
+file-organizer history     # show recent batches
+```
+
+Or as a module:
+
+```bash
+python -m file_organizer undo
 ```
 Run with no arguments to start watching:
 
