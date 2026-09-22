@@ -2,7 +2,7 @@
 import os
 import logging
 
-from history import get_last_batch, delete_batch
+from .history import get_last_batch, delete_batch
 
 def undo_last_batch() -> int:
     result = get_last_batch()
