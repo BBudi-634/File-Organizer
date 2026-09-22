@@ -1,16 +1,20 @@
-.venv/
+# Python build artifacts
 __pycache__/
-*.pyc
-.idea/
-.DS_Store
+*.py[cod]
+*.egg-info/
+build/
+dist/
 
-# Local test utilities
-slow_write.py
-cleanup.py
+# Virtual env
+.venv/
+venv/
 
-# Logs
+# Logs and DB
 *.log
-organizer.log
+*.db
+*.sqlite3
 
-# Local config overrides (not the shared config.toml)
-config.local.toml
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
