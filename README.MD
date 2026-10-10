@@ -30,7 +30,7 @@ and being able to undo everything.
 ## Install
 
 ```bash
-git clone https://github.com/bryantsetyobudi634-wq/file-organizer.git
+git clone https://github.com/BBudi-634/file-organizer.git
 cd file-organizer
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
